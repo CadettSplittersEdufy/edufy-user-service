@@ -45,7 +45,7 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(user));
     }
 
-    @PutMapping("/inactivateuser")
+    @PutMapping("/inactivateuser/{id}")
     public ResponseEntity<String> setUserInactive(@PathVariable Long id) {
         userService.setUserInactive(id);
         return ResponseEntity.ok("User set to inactive");
@@ -55,6 +55,6 @@ public class UserController {
     @DeleteMapping("/deleteuser/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok("User deleted");
+        return ResponseEntity.ok("User with id: " + id + " deleted");
     }
 }

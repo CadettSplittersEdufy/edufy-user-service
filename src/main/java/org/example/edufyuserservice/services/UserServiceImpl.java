@@ -21,6 +21,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDTO newUser(UserDTO user) {
         User newUser = new User();
+        newUser.setUsername(user.getUsername());
         newUser.setFirstName(user.getFirstName());
         newUser.setLastName(user.getLastName());
         newUser.setActive(true);
@@ -51,6 +52,7 @@ public class UserServiceImpl implements UserService {
         Optional<User> userOptional = userRepository.findById(userToUpdate.getId());
         if (userOptional.isPresent()) {
             User user = userOptional.get();
+            user.setUsername(userToUpdate.getUsername());
             user.setFirstName(userToUpdate.getFirstName());
             user.setLastName(userToUpdate.getLastName());
             user.setActive(userToUpdate.isActive());
@@ -76,6 +78,7 @@ public class UserServiceImpl implements UserService {
     public UserDTO convertToDTO(User user) {
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
+        userDTO.setUsername(user.getUsername());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
         userDTO.setActive(user.isActive());
