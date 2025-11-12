@@ -1,8 +1,11 @@
 package org.example.edufyuserservice.services;
 
-import org.example.edufyuserservice.DTOs.UserDTO;
+import org.example.edufyuserservice.DTOs.KeycloakDTO;
+import org.example.edufyuserservice.clients.GatewayClient;
 import org.example.edufyuserservice.entities.User;
+import org.example.edufyuserservice.exceptions.UserNotFoundException;
 import org.example.edufyuserservice.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -13,30 +16,41 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final GatewayClient gatewayClient;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, GatewayClient gatewayClient) {
         this.userRepository = userRepository;
+        this.gatewayClient = gatewayClient;
     }
 
     @Override
-    public UserDTO newUser(UserDTO user) {
+    public KeycloakDTO newUser(KeycloakDTO user) {
         User newUser = new User();
         newUser.setUsername(user.getUsername());
         newUser.setFirstName(user.getFirstName());
         newUser.setLastName(user.getLastName());
+        newUser.setEmail(user.getEmail());
         newUser.setActive(true);
+        try {
+            newUser.setKeycloakId(gatewayClient.createKeycloakId(user));
+        } catch (UserNotFoundException e) {
+            throw new IllegalArgumentException("Could not fetch Keycloak ID for user: " + newUser.getUsername(), e);
+        }
+
         userRepository.save(newUser);
         return convertToDTO(newUser);
     }
 
+
     @Override
-    public List<UserDTO> getAllUsers() {
+    public List<KeycloakDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
         return convertToDTOList(users);
     }
 
     @Override
-    public UserDTO getUserById(Long id) {
+    public KeycloakDTO getUserById(Long id) {
         if(userRepository.findById(id).isPresent()) {
         return convertToDTO(userRepository.findById(id).get());
     }else {
@@ -44,7 +58,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDTO updateUser(UserDTO userToUpdate) {
+    public KeycloakDTO updateUser(KeycloakDTO userToUpdate) {
         if(userToUpdate.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"User ID is required");
         }
@@ -55,6 +69,7 @@ public class UserServiceImpl implements UserService {
             user.setUsername(userToUpdate.getUsername());
             user.setFirstName(userToUpdate.getFirstName());
             user.setLastName(userToUpdate.getLastName());
+            user.setEmail(userToUpdate.getEmail());
             user.setActive(userToUpdate.isActive());
             userRepository.save(user);
             return convertToDTO(user);
@@ -75,21 +90,20 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public UserDTO convertToDTO(User user) {
-        UserDTO userDTO = new UserDTO();
+    public KeycloakDTO convertToDTO(User user) {
+        KeycloakDTO userDTO = new KeycloakDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
+        userDTO.setEmail(user.getEmail());
         userDTO.setActive(user.isActive());
         return userDTO;
     }
 
-    public List<UserDTO> convertToDTOList(List<User> users){
+    public List<KeycloakDTO> convertToDTOList(List<User> users){
         if (users == null || users.isEmpty()) {
-            UserDTO emptyMessageDTO = new UserDTO();
-            emptyMessageDTO.setMessage("No users found");
-            return List.of(emptyMessageDTO);
+            return List.of();
         }
 
         return users.stream()

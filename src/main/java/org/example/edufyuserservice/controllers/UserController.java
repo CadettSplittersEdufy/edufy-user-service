@@ -1,7 +1,6 @@
 package org.example.edufyuserservice.controllers;
 
-import org.example.edufyuserservice.DTOs.UserDTO;
-import org.example.edufyuserservice.entities.User;
+import org.example.edufyuserservice.DTOs.KeycloakDTO;
 import org.example.edufyuserservice.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,29 +25,29 @@ public class UserController {
     }
 
     @PostMapping("/newuser")
-    public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<KeycloakDTO> addUser(@RequestBody KeycloakDTO userDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.newUser(userDTO));
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<UserDTO>> getAllUsers() {
+    public ResponseEntity<List<KeycloakDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<KeycloakDTO> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PutMapping("/updateuser")
-    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO user) {
+    public ResponseEntity<KeycloakDTO> updateUser(@RequestBody KeycloakDTO user) {
         return ResponseEntity.ok(userService.updateUser(user));
     }
 
     @PutMapping("/inactivateuser/{id}")
     public ResponseEntity<String> setUserInactive(@PathVariable Long id) {
         userService.setUserInactive(id);
-        return ResponseEntity.ok("User set to inactive");
+        return ResponseEntity.ok("User: " + userService.getUserById(id).getUsername() + " set to inactive");
     }
 
 
