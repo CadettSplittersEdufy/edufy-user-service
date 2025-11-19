@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -24,8 +25,10 @@ public class UserServiceImpl implements UserService {
         this.gatewayClient = gatewayClient;
     }
 
+
     @Override
     public KeycloakDTO newUser(KeycloakDTO user) {
+        System.out.println("Creating a new user method called");
         User newUser = new User();
         newUser.setUsername(user.getUsername());
         newUser.setFirstName(user.getFirstName());
@@ -45,12 +48,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<KeycloakDTO> getAllUsers() {
+        System.out.println("Retrieving all users method called");
         List<User> users = userRepository.findAll();
         return convertToDTOList(users);
     }
 
     @Override
     public KeycloakDTO getUserById(Long id) {
+        System.out.println("Retrieving user by id method called");
         if(userRepository.findById(id).isPresent()) {
         return convertToDTO(userRepository.findById(id).get());
     }else {
@@ -59,6 +64,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public KeycloakDTO updateUser(KeycloakDTO userToUpdate) {
+        System.out.println("Updating user method called");
         if(userToUpdate.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"User ID is required");
         }
@@ -80,6 +86,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setUserInactive(Long id) {
+        System.out.println("Updating user inactive method called");
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -91,6 +98,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public KeycloakDTO convertToDTO(User user) {
+        System.out.println("Converting User to KeycloakDTO method called");
         KeycloakDTO userDTO = new KeycloakDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
@@ -98,10 +106,21 @@ public class UserServiceImpl implements UserService {
         userDTO.setLastName(user.getLastName());
         userDTO.setEmail(user.getEmail());
         userDTO.setActive(user.isActive());
+
+        String keycloakId = user.getKeycloakId();
+        if(keycloakId == null || keycloakId.isEmpty()){
+            String username = user.getUsername();
+            if(gatewayClient.keycloakUserExists(username))
+                userDTO.setKeycloakId(gatewayClient.fetchKeycloakId(username));
+        } else {
+           userDTO.setKeycloakId(keycloakId);
+        }
+
         return userDTO;
     }
 
     public List<KeycloakDTO> convertToDTOList(List<User> users){
+        System.out.println("Converting Users list to KeycloakDTO list method called");
         if (users == null || users.isEmpty()) {
             return List.of();
         }
@@ -113,6 +132,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
+        System.out.println("Deleting user by id method called");
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
