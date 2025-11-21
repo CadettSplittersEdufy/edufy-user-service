@@ -107,6 +107,17 @@ public class UserServiceImpl implements UserService {
         userDTO.setEmail(user.getEmail());
         userDTO.setActive(user.isActive());
 
+        String role = user.getRole();
+        if(role == null || role.isEmpty()) {
+            String username = user.getUsername();
+            if(gatewayClient.keycloakUserExists(username)) {
+                List<String> newRole = gatewayClient.fetchUserRoles(username);
+                userDTO.setRole(newRole.getFirst());
+            }
+        } else {
+            userDTO.setRole(role);
+        }
+
         String keycloakId = user.getKeycloakId();
         if(keycloakId == null || keycloakId.isEmpty()){
             String username = user.getUsername();
@@ -129,6 +140,13 @@ public class UserServiceImpl implements UserService {
                 .map(this::convertToDTO)
                 .toList();
     }
+
+    public List<String> getUserRoles(String username){
+        System.out.println("Retrieving user roles method called");
+
+        return gatewayClient.fetchUserRoles(username);
+    }
+
 
     @Override
     public void deleteUser(Long id) {

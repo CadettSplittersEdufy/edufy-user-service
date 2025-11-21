@@ -1,11 +1,16 @@
 package org.example.edufyuserservice.clients;
 
+import org.example.edufyuserservice.DTOs.RatingDTO;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import java.util.List;
 
 @Component
 public class RatingsClient {
@@ -41,5 +46,14 @@ public class RatingsClient {
         }
 
 
+    public List<RatingDTO> getUserLikes(Long userId) {
+        ResponseEntity<List<RatingDTO>> userLikes = restClient.get()
+                .uri(uriBuilder -> uriBuilder
+                        .path("/ratings/getlikesbyuser/{userId}")
+                        .build(userId))
+                .retrieve()
+                .toEntity(new ParameterizedTypeReference<List<RatingDTO>>() {});
 
+        return userLikes.getBody();
+    }
 }

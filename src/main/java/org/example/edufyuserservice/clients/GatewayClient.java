@@ -1,12 +1,16 @@
 package org.example.edufyuserservice.clients;
 
 import org.example.edufyuserservice.DTOs.KeycloakDTO;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+
+import java.util.List;
 
 @Component
 public class GatewayClient {
@@ -59,6 +63,19 @@ public class GatewayClient {
                         .build(username))
                 .retrieve()
                 .body(String.class);
+    }
+
+    public List<String> fetchUserRoles(String username) {
+        System.out.println("fetching user roles from gateway-service");
+            ResponseEntity<List<String>> response = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/getuserrole/{username}")
+                            .queryParam("username", username)
+                            .build(username))
+                    .retrieve()
+                    .toEntity(new ParameterizedTypeReference<List<String>>() {});
+
+            return response.getBody();
     }
 
     public boolean keycloakUserExists(String username){

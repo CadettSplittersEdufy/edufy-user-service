@@ -2,6 +2,7 @@ package org.example.edufyuserservice.entities;
 
 import jakarta.persistence.*;
 
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -29,17 +30,27 @@ public class User {
     @Column(length=25, nullable = false)
     private boolean active;
 
+    @Column(length = 50, nullable = false)
+    private String role;
+
 
 
     public User() {}
 
-    public User(String username, String firstName, String lastName, String email, boolean active, String keycloakId) {
+    public User(String username,
+                String firstName,
+                String lastName,
+                String email,
+                boolean active,
+                String keycloakId,
+                String role) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.active = active;
         this.keycloakId = keycloakId;
+        this.role = role;
     }
 
     public long getId() {
@@ -98,6 +109,14 @@ public class User {
         this.keycloakId = keycloakId;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
         return "User [id=" + id +
@@ -106,6 +125,7 @@ public class User {
                 ", lastName=" + lastName +
                 ", isActive=" + active +
                 ", email=" + email +
-                ", keycloakId=" + keycloakId +"]";
+                ", keycloakId=" + keycloakId +
+                ", role=" + role +"]";
     }
 }

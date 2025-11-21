@@ -1,6 +1,7 @@
 package org.example.edufyuserservice.controllers;
 
 import org.example.edufyuserservice.DTOs.KeycloakDTO;
+import org.example.edufyuserservice.DTOs.RatingDTO;
 import org.example.edufyuserservice.clients.RatingsClient;
 import org.example.edufyuserservice.services.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +35,18 @@ public class UserController {
         return ratingsClient.callRatingsService();
     }
 
+    @GetMapping("/userlikes/{userId}")
+    public List<RatingDTO> userlikes(@PathVariable Long userId) {
+            return ratingsClient.getUserLikes(userId);
+    }
+
+
+    @PreAuthorize("hasRole('edufy_ADMIN')")
     @PostMapping("/newuser")
     public ResponseEntity<KeycloakDTO> addUser(@RequestBody KeycloakDTO userDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.newUser(userDTO));
     }
 
-    @PreAuthorize("permitAll()")
     @GetMapping("/getall")
     public ResponseEntity<List<KeycloakDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
@@ -61,7 +68,7 @@ public class UserController {
         return ResponseEntity.ok("User: " + userService.getUserById(id).getUsername() + " set to inactive");
     }
 
-
+    @PreAuthorize("hasRole('edufy_ADMIN')")
     @DeleteMapping("/deleteuser/{id}")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
