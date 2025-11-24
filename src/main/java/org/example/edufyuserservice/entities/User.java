@@ -2,6 +2,7 @@ package org.example.edufyuserservice.entities;
 
 import jakarta.persistence.*;
 
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -10,6 +11,9 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(length=25, nullable=false)
     private long id;
+
+    @Column(length=175, nullable=false, unique=true)
+    private String keycloakId;
 
     @Column(length=50, nullable=false)
     private String username;
@@ -20,16 +24,33 @@ public class User {
     @Column(length=50,nullable = false)
     private String lastName;
 
+    @Column(length=75, nullable = false)
+    private String email;
+
     @Column(length=25, nullable = false)
     private boolean active;
 
+    @Column(length = 50, nullable = false)
+    private String role;
+
+
+
     public User() {}
 
-    public User(String username, String firstName, String lastName, boolean active) {
+    public User(String username,
+                String firstName,
+                String lastName,
+                String email,
+                boolean active,
+                String keycloakId,
+                String role) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.email = email;
         this.active = active;
+        this.keycloakId = keycloakId;
+        this.role = role;
     }
 
     public long getId() {
@@ -72,8 +93,39 @@ public class User {
         this.firstName = firstName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
     @Override
     public String toString() {
-        return "User [id=" + id + ", username=" + username + ", firstName=" + firstName + ", lastName=" + lastName + ", isActive=" + active + "]";
+        return "User [id=" + id +
+                ", username=" + username +
+                ", firstName=" + firstName +
+                ", lastName=" + lastName +
+                ", isActive=" + active +
+                ", email=" + email +
+                ", keycloakId=" + keycloakId +
+                ", role=" + role +"]";
     }
 }
