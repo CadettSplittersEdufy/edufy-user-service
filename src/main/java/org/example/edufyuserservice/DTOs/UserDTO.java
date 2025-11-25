@@ -7,16 +7,18 @@ public class UserDTO {
     private String lastName;
     private boolean active;
     private String message;
+    private String role;
 
     public UserDTO() {}
 
-    public UserDTO(Long id, String username, String firstName, String lastName, boolean active, String message) {
+    public UserDTO(Long id, String username, String firstName, String lastName, boolean active, String message,  String role) {
         this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.active = active;
         this.message = message;
+        this.role = role;
     }
 
     public Long getId() {
@@ -67,6 +69,14 @@ public class UserDTO {
         this.message = message;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
 
     @Override
     public String toString() {
@@ -75,7 +85,7 @@ public class UserDTO {
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", active=" + active + ", message='" + message + '\'' +
+                ", active=" + active + ", message='" + message + '\'' + ", role='" + role + '\'' +
                 '}';
     }
 }
