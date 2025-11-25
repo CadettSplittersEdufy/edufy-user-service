@@ -1,18 +1,18 @@
 package org.example.edufyuserservice.services;
 
-import org.example.edufyuserservice.DTOs.KeycloakDTO;
+import org.example.edufyuserservice.DTOs.UserDTO;
 
 import java.util.List;
 
 public interface UserService {
 
-    KeycloakDTO newUser(KeycloakDTO userDTO);
+    UserDTO newUser(UserDTO userDTO);
 
-    List<KeycloakDTO> getAllUsers();
+    List<UserDTO> getAllUsers();
 
-    KeycloakDTO getUserById(Long id);
+    UserDTO getUserById(Long id);
 
-    KeycloakDTO updateUser(KeycloakDTO userDTO);
+    UserDTO updateUser(UserDTO userDTO);
 
     void setUserInactive(Long id);
 

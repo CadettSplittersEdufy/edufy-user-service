@@ -1,6 +1,6 @@
 package org.example.edufyuserservice.clients;
 
-import org.example.edufyuserservice.DTOs.KeycloakDTO;
+import org.example.edufyuserservice.DTOs.UserDTO;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -40,7 +40,7 @@ public class GatewayClient {
     }
 
 
-    public String createKeycloakId(KeycloakDTO userDTO) {
+    public String createKeycloakId(UserDTO userDTO) {
         System.out.println("fetching keycloak id from gateway-service via keycloak client");
 
 

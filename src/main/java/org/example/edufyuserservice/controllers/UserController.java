@@ -1,6 +1,6 @@
 package org.example.edufyuserservice.controllers;
 
-import org.example.edufyuserservice.DTOs.KeycloakDTO;
+import org.example.edufyuserservice.DTOs.UserDTO;
 import org.example.edufyuserservice.DTOs.RatingDTO;
 import org.example.edufyuserservice.clients.RatingsClient;
 import org.example.edufyuserservice.services.UserServiceImpl;
@@ -43,22 +43,22 @@ public class UserController {
 
     @PreAuthorize("hasRole('edufy_ADMIN')")
     @PostMapping("/newuser")
-    public ResponseEntity<KeycloakDTO> addUser(@RequestBody KeycloakDTO userDTO) {
+    public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.newUser(userDTO));
     }
 
     @GetMapping("/getall")
-    public ResponseEntity<List<KeycloakDTO>> getAllUsers() {
+    public ResponseEntity<List<UserDTO>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<KeycloakDTO> getUserById(@PathVariable Long id) {
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
     @PutMapping("/updateuser")
-    public ResponseEntity<KeycloakDTO> updateUser(@RequestBody KeycloakDTO user) {
+    public ResponseEntity<UserDTO> updateUser(@RequestBody UserDTO user) {
         return ResponseEntity.ok(userService.updateUser(user));
     }
 

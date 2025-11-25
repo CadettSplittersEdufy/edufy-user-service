@@ -1,6 +1,6 @@
 package org.example.edufyuserservice.DTOs;
 
-public class KeycloakDTO {
+public class UserDTO {
     private String keycloakId;
     private Long id;
     private String username;
@@ -11,9 +11,9 @@ public class KeycloakDTO {
     private String role;
     private boolean active;
 
-    public KeycloakDTO() {}
+    public UserDTO() {}
 
-    public KeycloakDTO(String keycloakId, Long id, String username, String firstName, String lastName, String email, String password, String role, boolean active) {
+    public UserDTO(String keycloakId, Long id, String username, String firstName, String lastName, String email, String password, String role, boolean active) {
         this.keycloakId = keycloakId;
         this.id = id;
         this.username = username;
@@ -99,7 +99,7 @@ public class KeycloakDTO {
 
     @Override
     public String toString() {
-        return "KeycloakDTO{" +
+        return "UserDTO{" +
                 "keycloakId='" + keycloakId + '\'' +
                 ", id=" + id +
                 ", username='" + username + '\'' +

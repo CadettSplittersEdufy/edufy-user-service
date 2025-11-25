@@ -1,6 +1,6 @@
 package org.example.edufyuserservice.services;
 
-import org.example.edufyuserservice.DTOs.KeycloakDTO;
+import org.example.edufyuserservice.DTOs.UserDTO;
 import org.example.edufyuserservice.clients.GatewayClient;
 import org.example.edufyuserservice.entities.User;
 import org.example.edufyuserservice.exceptions.UserNotFoundException;
@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public KeycloakDTO newUser(KeycloakDTO user) {
+    public UserDTO newUser(UserDTO user) {
         System.out.println("Creating a new user method called");
         User newUser = new User();
         newUser.setUsername(user.getUsername());
@@ -47,14 +47,14 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<KeycloakDTO> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         System.out.println("Retrieving all users method called");
         List<User> users = userRepository.findAll();
         return convertToDTOList(users);
     }
 
     @Override
-    public KeycloakDTO getUserById(Long id) {
+    public UserDTO getUserById(Long id) {
         System.out.println("Retrieving user by id method called");
         if(userRepository.findById(id).isPresent()) {
         return convertToDTO(userRepository.findById(id).get());
@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public KeycloakDTO updateUser(KeycloakDTO userToUpdate) {
+    public UserDTO updateUser(UserDTO userToUpdate) {
         System.out.println("Updating user method called");
         if(userToUpdate.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"User ID is required");
@@ -97,9 +97,9 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public KeycloakDTO convertToDTO(User user) {
-        System.out.println("Converting User to KeycloakDTO method called");
-        KeycloakDTO userDTO = new KeycloakDTO();
+    public UserDTO convertToDTO(User user) {
+        System.out.println("Converting User to UserDTO method called");
+        UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setFirstName(user.getFirstName());
@@ -130,8 +130,8 @@ public class UserServiceImpl implements UserService {
         return userDTO;
     }
 
-    public List<KeycloakDTO> convertToDTOList(List<User> users){
-        System.out.println("Converting Users list to KeycloakDTO list method called");
+    public List<UserDTO> convertToDTOList(List<User> users){
+        System.out.println("Converting Users list to UserDTO list method called");
         if (users == null || users.isEmpty()) {
             return List.of();
         }
