@@ -1,42 +1,67 @@
 package org.example.edufyuserservice.services;
 
 import org.example.edufyuserservice.DTOs.UserDTO;
+import org.example.edufyuserservice.clients.GatewayClient;
 import org.example.edufyuserservice.entities.User;
+import org.example.edufyuserservice.exceptions.UserNotFoundException;
 import org.example.edufyuserservice.repositories.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 import java.util.Optional;
 
+
 @Service
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final GatewayClient gatewayClient;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    @Autowired
+    public UserServiceImpl(UserRepository userRepository, GatewayClient gatewayClient) {
         this.userRepository = userRepository;
+        this.gatewayClient = gatewayClient;
     }
+
 
     @Override
     public UserDTO newUser(UserDTO user) {
+        System.out.println("Creating a new user method called");
         User newUser = new User();
         newUser.setUsername(user.getUsername());
         newUser.setFirstName(user.getFirstName());
         newUser.setLastName(user.getLastName());
+        newUser.setEmail(user.getEmail());
         newUser.setActive(true);
+
+        if (user.getRole() == null) {
+            newUser.setRole("edufy_USER");
+        }
+        try {
+            newUser.setKeycloakId(gatewayClient.createKeycloakId(user));
+        } catch (UserNotFoundException e) {
+            throw new IllegalArgumentException("Could not fetch Keycloak ID for user: " + newUser.getUsername(), e);
+        }
+
         userRepository.save(newUser);
-        return convertToDTO(newUser);
+        UserDTO newUserDTO = convertToDTO(newUser);
+        gatewayClient.setUserRole(newUserDTO);
+        return newUserDTO;
     }
+
 
     @Override
     public List<UserDTO> getAllUsers() {
+        System.out.println("Retrieving all users method called");
         List<User> users = userRepository.findAll();
         return convertToDTOList(users);
     }
 
     @Override
     public UserDTO getUserById(Long id) {
+        System.out.println("Retrieving user by id method called");
         if(userRepository.findById(id).isPresent()) {
         return convertToDTO(userRepository.findById(id).get());
     }else {
@@ -45,6 +70,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO updateUser(UserDTO userToUpdate) {
+        System.out.println("Updating user method called");
         if(userToUpdate.getId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"User ID is required");
         }
@@ -55,6 +81,7 @@ public class UserServiceImpl implements UserService {
             user.setUsername(userToUpdate.getUsername());
             user.setFirstName(userToUpdate.getFirstName());
             user.setLastName(userToUpdate.getLastName());
+            user.setEmail(userToUpdate.getEmail());
             user.setActive(userToUpdate.isActive());
             userRepository.save(user);
             return convertToDTO(user);
@@ -65,6 +92,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void setUserInactive(Long id) {
+        System.out.println("Updating user inactive method called");
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -76,20 +104,42 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDTO convertToDTO(User user) {
+        System.out.println("Converting User to UserDTO method called");
         UserDTO userDTO = new UserDTO();
         userDTO.setId(user.getId());
         userDTO.setUsername(user.getUsername());
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
+        userDTO.setEmail(user.getEmail());
         userDTO.setActive(user.isActive());
+
+        String role = user.getRole();
+        if(role == null || role.isEmpty()) {
+            String username = user.getUsername();
+            if(gatewayClient.keycloakUserExists(username)) {
+                List<String> newRole = gatewayClient.fetchUserRoles(username);
+                userDTO.setRole(newRole.getFirst());
+            }
+        } else {
+            userDTO.setRole(role);
+        }
+
+        String keycloakId = user.getKeycloakId();
+        if(keycloakId == null || keycloakId.isEmpty()){
+            String username = user.getUsername();
+            if(gatewayClient.keycloakUserExists(username))
+                userDTO.setKeycloakId(gatewayClient.fetchKeycloakId(username));
+        } else {
+           userDTO.setKeycloakId(keycloakId);
+        }
+
         return userDTO;
     }
 
     public List<UserDTO> convertToDTOList(List<User> users){
+        System.out.println("Converting Users list to UserDTO list method called");
         if (users == null || users.isEmpty()) {
-            UserDTO emptyMessageDTO = new UserDTO();
-            emptyMessageDTO.setMessage("No users found");
-            return List.of(emptyMessageDTO);
+            return List.of();
         }
 
         return users.stream()
@@ -97,8 +147,16 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
+    public List<String> getUserRoles(String username){
+        System.out.println("Retrieving user roles method called");
+
+        return gatewayClient.fetchUserRoles(username);
+    }
+
+
     @Override
     public void deleteUser(Long id) {
+        System.out.println("Deleting user by id method called");
         Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isPresent()) {
             User user = userOptional.get();

@@ -1,7 +1,6 @@
 package org.example.edufyuserservice.services;
 
 import org.example.edufyuserservice.DTOs.UserDTO;
-import org.example.edufyuserservice.entities.User;
 
 import java.util.List;
 

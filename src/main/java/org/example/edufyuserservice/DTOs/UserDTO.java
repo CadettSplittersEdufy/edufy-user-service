@@ -1,24 +1,36 @@
 package org.example.edufyuserservice.DTOs;
 
 public class UserDTO {
+    private String keycloakId;
     private Long id;
     private String username;
     private String firstName;
     private String lastName;
-    private boolean active;
-    private String message;
+    private String email;
+    private String password;
     private String role;
+    private boolean active;
 
     public UserDTO() {}
 
-    public UserDTO(Long id, String username, String firstName, String lastName, boolean active, String message,  String role) {
+    public UserDTO(String keycloakId, Long id, String username, String firstName, String lastName, String email, String password, String role, boolean active) {
+        this.keycloakId = keycloakId;
         this.id = id;
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.active = active;
-        this.message = message;
+        this.email = email;
+        this.password = password;
         this.role = role;
+        this.active = active;
+    }
+
+    public String getKeycloakId() {
+        return keycloakId;
+    }
+
+    public void setKeycloakId(String keycloakId) {
+        this.keycloakId = keycloakId;
     }
 
     public Long getId() {
@@ -53,20 +65,20 @@ public class UserDTO {
         this.lastName = lastName;
     }
 
-    public boolean isActive() {
-        return active;
+    public String getEmail() {
+        return email;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getMessage() {
-        return message;
+    public String getPassword() {
+        return password;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getRole() {
@@ -77,15 +89,27 @@ public class UserDTO {
         this.role = role;
     }
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     @Override
     public String toString() {
         return "UserDTO{" +
-                "id=" + id +
+                "keycloakId='" + keycloakId + '\'' +
+                ", id=" + id +
                 ", username='" + username + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
-                ", active=" + active + ", message='" + message + '\'' + ", role='" + role + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", role='" + role + '\'' +
+                ", active=" + active +
                 '}';
     }
 }
+
