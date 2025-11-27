@@ -39,6 +39,15 @@ public class GatewayClient {
                 .build();
     }
 
+    public void setUserRole(UserDTO userDTO){
+
+        restClient.post()
+                .uri("/assignrole")
+                .body(userDTO)
+                .retrieve()
+                .body(void.class);
+    }
+
 
     public String createKeycloakId(UserDTO userDTO) {
         System.out.println("fetching keycloak id from gateway-service via keycloak client");

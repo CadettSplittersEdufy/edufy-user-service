@@ -35,6 +35,10 @@ public class UserServiceImpl implements UserService {
         newUser.setLastName(user.getLastName());
         newUser.setEmail(user.getEmail());
         newUser.setActive(true);
+
+        if (user.getRole() == null) {
+            newUser.setRole("edufy_USER");
+        }
         try {
             newUser.setKeycloakId(gatewayClient.createKeycloakId(user));
         } catch (UserNotFoundException e) {
@@ -42,7 +46,9 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(newUser);
-        return convertToDTO(newUser);
+        UserDTO newUserDTO = convertToDTO(newUser);
+        gatewayClient.setUserRole(newUserDTO);
+        return newUserDTO;
     }
 
 
