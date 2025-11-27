@@ -41,7 +41,6 @@ public class UserController {
     }
 
 
-    @PreAuthorize("hasRole('edufy_ADMIN')")
     @PostMapping("/newuser")
     public ResponseEntity<UserDTO> addUser(@RequestBody UserDTO userDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.newUser(userDTO));
