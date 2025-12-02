@@ -9,6 +9,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 import java.util.List;
 
@@ -16,6 +19,9 @@ import java.util.List;
 public class GatewayClient {
 
     private final RestClient restClient;
+
+    private static final Logger log = LoggerFactory.getLogger(GatewayClient.class);
+
 
 
     public GatewayClient(RestClient.Builder restClient){
@@ -40,18 +46,21 @@ public class GatewayClient {
     }
 
     public void setUserRole(UserDTO userDTO){
-
-        restClient.post()
-                .uri("/assignrole")
-                .body(userDTO)
-                .retrieve()
-                .body(void.class);
+        try {
+            restClient.post()
+                    .uri("/assignrole")
+                    .body(userDTO)
+                    .retrieve()
+                    .body(void.class);
+        } catch (Exception e) {
+            log.error("Failed to assign role for user {}", userDTO.getUsername(), e);
+            throw e;
+        }
     }
 
 
     public String createKeycloakId(UserDTO userDTO) {
-        System.out.println("fetching keycloak id from gateway-service via keycloak client");
-
+            try{
 
         String gatewayServiceResponse = restClient.post()
                 .uri("/newuser")
@@ -60,11 +69,15 @@ public class GatewayClient {
                 .body(String.class);
 
         return gatewayServiceResponse + " from gateway service via keycloak client";
+            } catch (Exception e) {
+                log.error("Failed to create Keycloak ID for username {}", userDTO.getUsername(), e);
+                throw e;
+            }
     }
 
-    public String fetchKeycloakId(String username) {
-        System.out.println("fetching keycloak id from gateway-service");
 
+    public String fetchKeycloakId(String username) {
+        try{
         return restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/userid/{username}")
@@ -72,10 +85,14 @@ public class GatewayClient {
                         .build(username))
                 .retrieve()
                 .body(String.class);
+        } catch (Exception e) {
+            log.error("Failed to fetch Keycloak ID for username {}", username, e);
+            throw e;
+        }
     }
 
     public List<String> fetchUserRoles(String username) {
-        System.out.println("fetching user roles from gateway-service");
+        try{
             ResponseEntity<List<String>> response = restClient.get()
                     .uri(uriBuilder -> uriBuilder
                             .path("/getuserrole/{username}")
@@ -85,11 +102,16 @@ public class GatewayClient {
                     .toEntity(new ParameterizedTypeReference<List<String>>() {});
 
             return response.getBody();
+            } catch (Exception e) {
+                     log.error("Failed to fetch roles for username {}", username, e);
+                        throw e;
+                        }
     }
 
     public boolean keycloakUserExists(String username){
 
-        return Boolean.TRUE.equals(restClient.get()
+        try{
+            return Boolean.TRUE.equals(restClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/usernameexists/{username}")
                         .queryParam("username", username)
@@ -97,5 +119,9 @@ public class GatewayClient {
                 .retrieve()
                 .body(Boolean.class));
 
-    }
+         } catch (Exception e) {
+                log.error("Failed to check if Keycloak user exists: {}", username, e);
+                throw e;
+            }
+        }
 }
